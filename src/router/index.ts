@@ -4,10 +4,12 @@ const UrlView = () => import("../views/UrlView.vue");
 const RedirectView = () => import("../views/RedirectView.vue");
 const routes = [
   {
+    name: "home",
     path: "/",
     component: UrlView,
   },
   {
+    name: "goTo",
     path: "/r/:id",
     component: RedirectView,
   },

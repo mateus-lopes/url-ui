@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from "node:url";
 export default defineConfig({
   plugins: [vue()],
   server: {
-    port: 3000,
+    port: 3001,
   },
   define: { "process.env": {} },
   resolve: {

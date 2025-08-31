@@ -36,16 +36,17 @@
 import { ref } from "vue";
 import router from "@/router";
 import { onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useUrlStore } from "../store/urlStore";
 
-import img1 from "./img/1.jpg";
-import img2 from "./img/2.jpg";
-import img3 from "./img/3.jpg";
-import img4 from "./img/4.jpg";
-import img5 from "./img/5.jpg";
-import img6 from "./img/6.jpg";
+import img1 from "../assets/img/1.jpg";
+import img2 from "../assets/img/2.jpg";
+import img3 from "../assets/img/3.jpg";
+import img4 from "../assets/img/4.jpg";
+import img5 from "../assets/img/5.jpg";
+import img6 from "../assets/img/6.jpg";
 
-const route = useRoute();
+const urlStore = useUrlStore();
+
 let randomInteger = Math.floor(Math.random() * 6);
 const dict = {
   1: img1,
@@ -55,23 +56,18 @@ const dict = {
   5: img5,
   6: img6,
 };
-console.log(randomInteger);
 const imgAleatoria = ref(dict[randomInteger]);
 
-onMounted(() => {
+onMounted(async () => {
   const urlCompleta = window.location.href;
   const redirect = urlCompleta.split("/").reverse()[0];
-  const urlsJson = localStorage.getItem("links");
-  const urls = JSON.parse(urlsJson);
-  const link = urls.find((u) => u.fakeLink === redirect);
+  const link = await urlStore.getUrlByFakeUrl(redirect);
 
   if (link) {
-    console.log(link);
     setTimeout(() => {
-      window.location.replace(link.realLink);
+      window.location.replace(link.data.url);
     }, 1500);
   } else {
-    console.log("n achou");
     setTimeout(() => {
       router.push({ path: "/" });
     }, 1500);
