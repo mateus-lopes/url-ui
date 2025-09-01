@@ -1,13 +1,13 @@
 import api from '../plugins/api'
-import { IUrl } from '../types/urlType'
+import { IUrl, CreateUrlPayload } from '../types/urlType'
 
 class UrlService {
   handleError(error: any, action: string) {
     console.error(`Error during ${action}:`, error)
-    throw new Error(`Failed to ${action} work`);
+    throw new Error(error.response?.data?.message || 'Um erro inesperado ocorreu');
   }
 
-  async addUrl (url: IUrl) {
+  async addUrl (url: CreateUrlPayload) {
     try {
       const response = await api.post('/urls/', url)
       return response
@@ -54,7 +54,7 @@ class UrlService {
   async getUrlByFakeUrl (fakeUrl: string) {
     try {
       const response = await api.get(`/urls/fake/${fakeUrl}/`)
-      return response
+      return response.data
     } catch (error) {
       this.handleError(error, 'get')
     }

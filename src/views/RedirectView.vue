@@ -1,5 +1,10 @@
 <template>
+  <div class="font-mono w-screen h-screen bg-black flex justify-center items-center flex-col" v-if="urlStore.error">
+    <p class="mt-5 text-red-500 text-xl">{{ urlStore.error }}</p>
+    <router-link to="/" class="mt-5 hover:text-blue-400">Voltar para a página inicial</router-link>
+  </div>
   <div
+    v-else
     class="font-mono w-screen h-screen bg-black flex justify-center items-center flex-col"
   >
     <img
@@ -32,20 +37,27 @@
 }
 </style>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
-import router from "@/router";
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 import { useUrlStore } from "../store/urlStore";
 
+// @ts-ignore
 import img1 from "../assets/img/1.jpg";
+// @ts-ignore
 import img2 from "../assets/img/2.jpg";
+// @ts-ignore
 import img3 from "../assets/img/3.jpg";
+// @ts-ignore
 import img4 from "../assets/img/4.jpg";
+// @ts-ignore
 import img5 from "../assets/img/5.jpg";
+// @ts-ignore
 import img6 from "../assets/img/6.jpg";
 
 const urlStore = useUrlStore();
+const router = useRouter();
 
 let randomInteger = Math.floor(Math.random() * 6);
 const dict = {
@@ -63,9 +75,18 @@ onMounted(async () => {
   const redirect = urlCompleta.split("/").reverse()[0];
   const link = await urlStore.getUrlByFakeUrl(redirect);
 
-  if (link) {
+  const currentDate = new Date().toISOString().slice(0, 10);
+  const expiresDate = link.expiresAt ? link.expiresAt.slice(0, 10) : null;
+
+  if (expiresDate === currentDate) {
+    urlStore.deleteUrl(link._id);
+    urlStore.setError("Link expirado");
     setTimeout(() => {
-      window.location.replace(link.data.url);
+      router.push({ path: "/" });
+    }, 2000);
+  } else if (link) {
+    setTimeout(() => {
+      window.location.replace(link.url);
     }, 1500);
   } else {
     setTimeout(() => {

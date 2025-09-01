@@ -1,13 +1,13 @@
 import { computed, reactive } from "vue";
 import { defineStore } from "pinia";
-import { IUrl } from "../types/urlType";
+import { IUrl, CreateUrlPayload } from "../types/urlType";
 import UrlService from "../service/urlService";
 
 export const useUrlStore = defineStore("urls", () => {
     const urlService = UrlService
 
     const state = reactive({
-        urls: [],
+        urls: [] as IUrl[],
         urlSelected: null as IUrl | null,
         loading: false,
         error: null as string | null
@@ -50,7 +50,7 @@ export const useUrlStore = defineStore("urls", () => {
         }
     };
 
-    const removeUrl = async (id: string) => {
+    const deleteUrl = async (id: string) => {
         setLoading(true);
         try {
             await urlService.removeUrl(id);
@@ -62,11 +62,11 @@ export const useUrlStore = defineStore("urls", () => {
         }
     };
 
-    const addUrl = async (url: IUrl): Promise<string | null> => {
+    const addUrl = async (url: CreateUrlPayload): Promise<string | null> => {
         setLoading(true);
         try {
             await urlService.addUrl(url);
-            state.urls.push(url);
+            state.urls.push(url as IUrl);
             return url.fakeUrl;
         } catch (error) {
             setError(error.message);
@@ -101,6 +101,6 @@ export const useUrlStore = defineStore("urls", () => {
         addUrl,
         getUrls,
         getUrl,
-        removeUrl
+        deleteUrl
     };
 });

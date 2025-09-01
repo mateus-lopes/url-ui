@@ -5,7 +5,11 @@ export interface IUrl {
     fakeUrl: string;
     ads: boolean;
     disabled: boolean;
-    expiresAt: Date | undefined;
+    expiresAt?: Date; 
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+export type CreateUrlPayload = Omit<IUrl, '_id' | 'createdAt' | 'updatedAt' | 'expiresAt'> & {
+    expiresAt?: string; 
+};
