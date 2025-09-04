@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useUrlStore } from "../store/urlStore";
+import FooterAutor from "../components/FooterAutor.vue";
 
 // @ts-ignore
 import UrlList from "../components/UrlList.vue";
@@ -15,6 +16,10 @@ const expiresAtDate = ref('');
 const realUrlRef = ref(null);
 const fakeUrlRef = ref(null);
 const url = ref("");
+
+watch([fakeUrl, realUrl], () => {
+  urlStore.setError("");
+});
 
 const onSave = async () => {
   const urlWithHttp = realUrl.value.slice(0, 8) !== "https://";
@@ -32,7 +37,7 @@ const onSave = async () => {
     expiresAt: expiration,
   });
 
-  url.value = data ?? "Ocorreu um erro";
+  url.value = data ?? "";
 };
 
 const copyToClipboard = async () => {
@@ -128,6 +133,7 @@ const copyToClipboard = async () => {
             class="mt-1 mb-2 py-2 px-4 rounded-2xl w-full text-black placeholder:text-gray-600"
           />
         </div>
+        
         <p v-if="url">
           <a
             :href="url"
@@ -171,21 +177,22 @@ const copyToClipboard = async () => {
             </svg>
           </button>
         </p>
+
+        <!-- error -->
+        <p v-if="urlStore.error" class="text-red-500 mb-4 mt-2">
+          {{ urlStore.error }}
+        </p>
+
         <button
           @click="onSave"
           class="bg-blue-500 w-96 mx-auto mt-1 rounded-2xl hover:bg-blue-900 transition-all"
         >
           Salvar Url
         </button>
-  <footer class="text-sm mt-4 text-gray-500">
-    <p>
-      2025 | 
-      <a href="https://github.com/mateus-lopes" target="_blank" class="hover:text-blue-500">mateus-lopes</a>
-    </p>
-  </footer>
+        <FooterAutor />
       </div>
     </div>
-    <url-list />
+    <UrlList />
   </div>
 </template>
 
