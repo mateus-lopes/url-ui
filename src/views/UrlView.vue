@@ -1,3 +1,49 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import { useUrlStore } from "../store/urlStore";
+
+// @ts-ignore
+import UrlList from "../components/UrlList.vue";
+
+const urlStore = useUrlStore();
+
+const realUrl = ref("");
+const fakeUrl = ref("");
+const ads = ref(false); 
+const showExpiresAt = ref(false);
+const expiresAtDate = ref('');
+const realUrlRef = ref(null);
+const fakeUrlRef = ref(null);
+const url = ref("");
+
+const onSave = async () => {
+  const urlWithHttp = realUrl.value.slice(0, 8) !== "https://";
+
+  const expiration = showExpiresAt.value && expiresAtDate.value 
+    ? new Date(expiresAtDate.value).toISOString() 
+    : undefined;
+
+  const data = await urlStore.addUrl({
+    url: urlWithHttp ? "https://" + realUrl.value : realUrl.value,
+    fakeUrl: "http://localhost:3001/r/" + fakeUrl.value,
+    title: fakeUrl.value,
+    ads: ads.value,
+    disabled: false,
+    expiresAt: expiration,
+  });
+
+  url.value = data ?? "Ocorreu um erro";
+};
+
+const copyToClipboard = async () => {
+  try {
+    await navigator.clipboard.writeText(url.value);
+  } catch (err) {
+    console.error("Falha ao copiar texto: ", err);
+  }
+};
+</script>
+
 <template>
   <div
     class="font-mono w-screen h-screen bg-black flex justify-center items-center"
@@ -142,50 +188,6 @@
     <url-list />
   </div>
 </template>
-
-<script setup lang="ts">
-import UrlList from "../components/UrlList.vue";
-import { ref } from "vue";
-import { useUrlStore } from "../store/urlStore";
-
-const urlStore = useUrlStore();
-
-const realUrl = ref("");
-const fakeUrl = ref("");
-const ads = ref(false); 
-const showExpiresAt = ref(false);
-const expiresAtDate = ref('');
-const realUrlRef = ref(null);
-const fakeUrlRef = ref(null);
-const url = ref("");
-
-const onSave = async () => {
-  const urlWithHttp = realUrl.value.slice(0, 8) !== "https://";
-
-  const expiration = showExpiresAt.value && expiresAtDate.value 
-    ? new Date(expiresAtDate.value).toISOString() 
-    : undefined;
-
-  const data = await urlStore.addUrl({
-    url: urlWithHttp ? "https://" + realUrl.value : realUrl.value,
-    fakeUrl: "http://localhost:3001/r/" + fakeUrl.value,
-    title: fakeUrl.value,
-    ads: ads.value,
-    disabled: false,
-    expiresAt: expiration,
-  });
-
-  url.value = data ?? "Ocorreu um erro";
-};
-
-const copyToClipboard = async () => {
-  try {
-    await navigator.clipboard.writeText(url.value);
-  } catch (err) {
-    console.error("Falha ao copiar texto: ", err);
-  }
-};
-</script>
 
 <style scoped>
 .ads {
